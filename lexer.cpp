@@ -4,13 +4,14 @@
 #include <iostream>
 #include <utility>
 
-static const std::regex s_regex_keyword(R"(^(var|org|if|else))");
+static const std::regex s_regex_keyword(R"(^(var|org|if|else|true|false|while))");
 static const std::regex s_regex_identifier(R"(^([a-zA-Z_][a-zA-Z0-9_\-]*))");
 static const std::regex s_regex_number(R"(^(\d(?!x|b)\d*))");
 static const std::regex s_regex_hex(R"(^(0x[0-9a-fA-F]+))");
 static const std::regex s_regex_bin(R"(^(0b[01]+))");
-static const std::regex s_regex_special(R"(^(==|[=\-+[\](){}&|;,]))");
+static const std::regex s_regex_special(R"(^(==|<=|>=|!=|>>|[=\-+[\](){}<>&|;,]))");
 static const std::regex s_regex_space(R"(^(\s+))");
+static const std::regex s_regex_comment(R"(^(//.*\n|//.*$))");
 
 Tokenization::Tokenization(std::string file_content)
 {
@@ -31,7 +32,11 @@ Tokenization::Tokenization(std::string file_content)
         TokenType type;
         int value = 0;
 
-        if (std::regex_search(m_file_content.cbegin() + position, m_file_content.cend(), match, s_regex_space)) {
+        if (std::regex_search(m_file_content.cbegin() + position, m_file_content.cend(), match, s_regex_comment)) {
+            std::cout << "Comment " << match.str();
+            position += match.length();
+            continue;
+        } else if (std::regex_search(m_file_content.cbegin() + position, m_file_content.cend(), match, s_regex_space)) {
             std::cout << "Space";
             type = Space;
         } else if (std::regex_search(m_file_content.cbegin() + position, m_file_content.cend(), match, s_regex_keyword)) {

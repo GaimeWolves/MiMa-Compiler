@@ -22,15 +22,18 @@ The grammar is C-like with additions/simplifications specific to MiMa Assembly (
 s ::= var x [= n]; s
     | x = e; s
     | [org n] s
+    | if (b) { s } [else if (b) { s }]* [else { s }] 
     | ε
 ```
 
 #### Value Expressions
 
 ```
-e ::= e2 [+ e]
-e2 ::= -e3 | e3
-e3 ::= n | x | (e)
+e1 ::= e2 [& e1]
+e2 ::= e3 [>> e2]
+e3 ::= e4 [+ e3]
+e4 ::= -e5 | e5
+e5 ::= n | x | (e1)
 ```
 
 ```
@@ -43,7 +46,7 @@ x ∈ Var
 ```
 b ::= b2 [|| b]
 b2 ::= b3 [&& b2]
-b3 ::= !b3 | b4
-b4 ::= e bop e | (b) | true | false
+b3 ::= !b4 | b4
+b4 ::= e1 bop e1 | (b) | true | false
 bop ::= < | > | == | != | <= | >=
 ```
